@@ -57,9 +57,6 @@ export interface Settings {
    * trigger for the note. Clocked never expects a break of any length.
    */
   readonly longShiftAfter: Minutes
-  /** Offered when a punch is missing. Never applied silently. */
-  readonly usualStart: Minutes | null
-  readonly usualFinish: Minutes | null
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -67,8 +64,6 @@ export const DEFAULT_SETTINGS: Settings = {
   rounding: 'exact',
   maxShift: 16 * 60,
   longShiftAfter: 6 * 60,
-  usualStart: null,
-  usualFinish: null,
 }
 
 export const EMPTY_DAY: Day = {

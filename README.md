@@ -103,23 +103,63 @@ The engine is a pure function with no React in it. Times are integer minutes sin
 - [ ] Accessibility pass. Desktop only, so phone layout is out of scope
 - [x] Deployed on Netlify, building from `main`
 - [ ] Custom domain pointed at it
-- [ ] This README rewritten as the case study
+- [x] This README rewritten as the case study
 
 ## Case study
 
-To be written at launch.
+### The problem
+
+Timesheets arrive incomplete. Somebody forgets to clock out, or logs a lunch and never comes back from it. The arithmetic is trivial. The judgement about the missing punch is not, and that's where the errors and the arguments come from.
+
+The sheets being read from show raw clocked times and nothing else. No indication of which punch is an in or an out, no indication of which times are breaks. A person supplies that reading, every time, for every sheet in the stack.
+
+### What I built
+
+A single page that takes one day's punches and gives back four numbers and a list of what it couldn't work out. The rule that shapes everything: t-breaks are paid and never move the total, lunch is unpaid and comes off at its real length. No break has an expected length, because the moment you define one you're answering "did they take too long?" instead of "how long did they work?".
+
+The second rule matters more. Clocked never invents an unpaid break. A missing clock out is almost certainly a system failure, so saying so is fair. A missing lunch might mean nobody took one, and deducting time somebody actually worked is the one mistake that costs them money. So it flags, and a human decides.
+
+### How I built it
+
+Engine first, with no React anywhere near it. Punches and settings in, totals and flags out. Times are integer minutes since midnight, so there's no date library and no floating point, and a shift crossing midnight is one modulo rather than a special case.
+
+The gap handling table from the spec became one test per row. Ten fixture days cover every shape a real sheet arrives in: a missing clock out, an unclosed lunch, a night shift, overlapping breaks, an eighteen hour entry that can only be a typo.
+
+Writing the engine first meant the interesting decisions were made before any of them were load bearing. Whether `9` means 09:00, whether `2400` is a time, what a paid break overlapping an unpaid one is worth. Each one is a test with the reasoning next to it.
+
+### What it looks like
+
+A day that adds up:
+
+![A completed day, showing 8h 3m of work time from a 8h 45m shift](docs/screenshots/completed-day.jpg)
+
+The same day with the lunch never clocked back in. Nothing is deducted, the total says so, and there's a box to record the time it should have been:
+
+![A flagged day, with the lunch unclosed and an expected time recorded](docs/screenshots/flagged-day.jpg)
+
+The review list, worked through once the stack is done. Grouped by shift date, printable as a checklist:
+
+![The review list, grouped by date, with expected and confirmed times](docs/screenshots/review-list.jpg)
+
+### What I'd do differently
+
+The form shape was the wrong call, and it was mine. Six fixed fields mirror the paper, which made the UI binding trivial, but every gap rule then had to cope with two kinds of break: the named ones and the extra rows. An ordered list of punches would have been one code path. I flattened the six fields into a list inside the engine to get most of it back, which works, but it's a patch over a decision rather than the decision.
+
+The fixtures are invented. They cover the right shapes, but a day that genuinely broke a spreadsheet is worth more than ten I thought up, and swapping them in is still on the list.
+
+### The details
 
 | | |
 | --- | --- |
 | Goal | Remove manual timesheet arithmetic and rebuild missing punches in the open, without policing anyone |
 | My contribution | Sole designer and developer |
-| Method | Rules engine first, tested against real awkward days from work |
-| Deliverables | Live app, public repo, screenshots of a completed day and a flagged day |
-| Skills | React, TypeScript, state design, testing, accessibility, responsive UI |
+| Method | Rules engine first, one test per row of the gap handling table, ten fixture days |
+| Deliverables | Live app, public repo, 181 tests, screenshots of a completed day, a flagged day and the review list |
+| Skills | React, TypeScript, state design, testing, accessibility, offline web apps |
 | Resources | React, TypeScript, Vite, Tailwind, Vitest, Netlify |
-| Link | [clocked.madebysami.app](https://clocked.madebysami.app) |
-| Completion date | October 2026 |
-| Visual | To come |
+| Link | [clocked-madebysami.netlify.app](https://clocked-madebysami.netlify.app) |
+| Completion date | September 2026 |
+| Visual | The three screenshots above |
 
 ## Licence
 

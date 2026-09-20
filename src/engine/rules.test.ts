@@ -95,35 +95,21 @@ describe('evaluateDay', () => {
   // One test per row of the gap handling table in the spec.
 
   describe('no shift end', () => {
-    it('asks, and offers nothing when no usual finish is set', () => {
+    it('asks, and assumes nothing', () => {
       const result = evaluateDay(day({ ...CLEAN_DAY, finish: null }))
       const raised = flag(result, 'missing-finish')
-      expect(raised).toMatchObject({ severity: 'needs-input', target: 'finish', proposal: null })
+      expect(raised).toMatchObject({ severity: 'needs-input', target: 'finish' })
       expect(raised.reason).toMatch(/no total yet/)
-    })
-
-    it('offers the usual finish without applying it', () => {
-      const result = evaluateDay(
-        day({ ...CLEAN_DAY, finish: null }),
-        settings({ usualFinish: AT_1730 }),
-      )
-      expect(flag(result, 'missing-finish').proposal).toEqual({ punch: 'finish', value: AT_1730 })
-      expect(flag(result, 'missing-finish').reason).toContain('17:30 is offered, not applied')
-      // Offered, so the total is still absent.
       expect(result.totals.workTime).toBeNull()
     })
   })
 
   describe('no shift start', () => {
-    it('asks, and offers the usual start when one is set', () => {
-      const result = evaluateDay(
-        day({ ...CLEAN_DAY, start: null }),
-        settings({ usualStart: AT_0900 }),
-      )
+    it('asks, and assumes nothing', () => {
+      const result = evaluateDay(day({ ...CLEAN_DAY, start: null }))
       expect(flag(result, 'missing-start')).toMatchObject({
         severity: 'needs-input',
         target: 'start',
-        proposal: { punch: 'start', value: AT_0900 },
       })
       expect(result.totals.gross).toBeNull()
     })
@@ -165,10 +151,7 @@ describe('evaluateDay', () => {
     it('notes it without inventing one', () => {
       const noLunch = day({ start: AT_0900, finish: AT_1730 })
       const result = evaluateDay(noLunch)
-      expect(flag(result, 'no-lunch-recorded')).toMatchObject({
-        severity: 'note',
-        proposal: null,
-      })
+      expect(flag(result, 'no-lunch-recorded')).toMatchObject({ severity: 'note' })
       // The total is untouched. That is the whole point of the rule.
       expect(result.totals.workTime).toBe(510)
     })
@@ -209,10 +192,7 @@ describe('evaluateDay', () => {
     it('flags over the maximum and changes nothing', () => {
       const long = day({ start: 5 * 60, finish: 23 * 60 + 30 })
       const result = evaluateDay(long)
-      expect(flag(result, 'implausible-length')).toMatchObject({
-        severity: 'needs-input',
-        proposal: null,
-      })
+      expect(flag(result, 'implausible-length')).toMatchObject({ severity: 'needs-input' })
       expect(result.totals.gross).toBe(18 * 60 + 30)
     })
 

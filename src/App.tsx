@@ -3,6 +3,7 @@ import { Confirm } from './components/Confirm.tsx'
 import { ExpectedTime } from './components/ExpectedTime.tsx'
 import { Flags } from './components/Flags.tsx'
 import { flagId } from './components/flagId.ts'
+import { Footer } from './components/Footer.tsx'
 import { ReviewSheet } from './components/ReviewSheet.tsx'
 import { SavedSheets } from './components/SavedSheets.tsx'
 import { SheetHeader } from './components/SheetHeader.tsx'
@@ -360,7 +361,7 @@ export default function App() {
           </div>
 
           <div className="no-print">
-            <Flags flags={flags} onAccept={edit} />
+            <Flags flags={flags} />
           </div>
 
           <div className="no-print flex flex-wrap gap-3">
@@ -451,6 +452,8 @@ export default function App() {
         T-breaks are paid and never change the total. Lunch is unpaid and comes off at its actual
         length. Clocked never invents a break and never guesses in silence.
       </p>
+
+      <Footer />
 
       <Confirm
         open={confirming}

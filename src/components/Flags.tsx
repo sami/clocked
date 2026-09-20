@@ -1,11 +1,8 @@
-import type { PunchId } from '../engine/day.ts'
-import { formatClock } from '../engine/time.ts'
 import type { Flag, FlagSeverity } from '../engine/rules.ts'
 import { flagId } from './flagId.ts'
 
 interface FlagsProps {
   readonly flags: readonly Flag[]
-  readonly onAccept: (punch: PunchId, text: string) => void
 }
 
 const SEVERITY: Readonly<Record<FlagSeverity, { label: string; classes: string }>> = {
@@ -14,8 +11,8 @@ const SEVERITY: Readonly<Record<FlagSeverity, { label: string; classes: string }
   note: { label: 'Note', classes: 'border-line bg-surface' },
 }
 
-/** Every flag, each with its reason and, where there is one, a proposal. */
-export function Flags({ flags, onAccept }: FlagsProps) {
+/** Every flag, each with the reason the rule gave for raising it. */
+export function Flags({ flags }: FlagsProps) {
   if (flags.length === 0) return null
 
   return (
@@ -27,7 +24,6 @@ export function Flags({ flags, onAccept }: FlagsProps) {
       <ul className="flex flex-col gap-2">
         {flags.map((flag) => {
           const severity = SEVERITY[flag.severity]
-          const { proposal } = flag
           return (
             <li
               key={`${flag.code}-${flag.target}`}
@@ -39,15 +35,6 @@ export function Flags({ flags, onAccept }: FlagsProps) {
                 {flag.reason}
               </p>
 
-              {proposal && (
-                <button
-                  type="button"
-                  onClick={() => onAccept(proposal.punch, formatClock(proposal.value))}
-                  className="mt-2 rounded-md border border-accent px-3 py-1 font-medium text-accent"
-                >
-                  Use {formatClock(proposal.value)}
-                </button>
-              )}
             </li>
           )
         })}

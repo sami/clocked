@@ -78,11 +78,11 @@ describe('the round trip', () => {
         finish: '1700',
         extra: [{ type: 'other', out: '1500', in: '1515', paid: true }],
       }),
-      settings: { ...DEFAULT_SETTINGS, rounding: 15, usualFinish: 1050 },
+      settings: { ...DEFAULT_SETTINGS, rounding: 15, maxShift: 600 },
     })
     const back = fromCsv(toCsv([rich]))
     expect(back[0]?.input.extra).toEqual(rich.input.extra)
-    expect(back[0]?.settings).toMatchObject({ rounding: 15, usualFinish: 1050 })
+    expect(back[0]?.settings).toMatchObject({ rounding: 15, maxShift: 600 })
   })
 
   it('carries several sheets, each with its own flags', () => {
