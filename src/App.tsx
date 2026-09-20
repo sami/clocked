@@ -3,7 +3,6 @@ import { Confirm } from './components/Confirm.tsx'
 import { ExpectedTime } from './components/ExpectedTime.tsx'
 import { Flags } from './components/Flags.tsx'
 import { flagId } from './components/flagId.ts'
-import { HouseRules } from './components/HouseRules.tsx'
 import { ReviewSheet } from './components/ReviewSheet.tsx'
 import { SavedSheets } from './components/SavedSheets.tsx'
 import { SheetHeader } from './components/SheetHeader.tsx'
@@ -393,10 +392,6 @@ export default function App() {
 
           <div className="no-print">
             <SavedSheets sheets={sheets} currentId={current.id} onOpen={openSheet} />
-          </div>
-
-          <div className="no-print">
-            <HouseRules settings={settings} onChange={setSettings} />
           </div>
         </>
       )}

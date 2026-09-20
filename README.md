@@ -83,7 +83,7 @@ src/
   storage/      Saved sheets, kept in this browser only.
   review/       The review list, the CSV round trip, saving a file.
   fixtures/     Ten awkward days the engine has to survive.
-  components/   The six fields, the totals, the flags, the house rules.
+  components/   The six fields, the totals, the flags, the review sheet.
   App.tsx       The single page.
   index.css     Tailwind and the design tokens.
 ```
@@ -95,7 +95,7 @@ The engine is a pure function with no React in it. Times are integer minutes sin
 - [x] Rules engine, one test per row of the gap table
 - [x] Single page form with live totals and flags
 - [x] Extra break rows and the Clear control
-- [x] Copy result, example day, house rules
+- [x] Copy result and example day
 - [x] Ten fixture days, one per awkward shape, covering every gap rule
 - [ ] Replace those fixtures with real anonymised days from a sheet
 - [x] Save sheets, flag what needs chasing, review list, CSV round trip
