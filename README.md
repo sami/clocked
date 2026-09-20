@@ -2,7 +2,7 @@
 
 Clocked is a timesheet calculator. You type in a day's clockings and it tells you how long the person worked and how long their breaks ran, even when half the punches are missing.
 
-**Status:** live at [clocked-madebysami.netlify.app](https://clocked-madebysami.netlify.app), rebuilt from `main` on every push. 180 tests over the rules. The custom domain at clocked.madebysami.app isn't pointed at it yet. Version 1 ships by 11 October 2026.
+**Status:** finished and live at [clocked.madebysami.app](https://clocked.madebysami.app), rebuilt from `main` on every push. 181 tests over the rules. Shipped 20 September 2026, three weeks ahead of the deadline.
 
 ## What problem does it solve?
 
@@ -90,7 +90,9 @@ src/
 
 The engine is a pure function with no React in it. Times are integer minutes since midnight, so there's no date library and no floating point. It takes one day and returns one result, which means a week view later is a loop over it.
 
-## What's left to build?
+## Milestones
+
+Version 1 is done. The two unticked items are deliberate, not forgotten.
 
 - [x] Rules engine, one test per row of the gap table
 - [x] Single page form with live totals and flags
@@ -102,7 +104,7 @@ The engine is a pure function with no React in it. Times are integer minutes sin
 - [x] Works offline without a connection
 - [ ] Accessibility pass. Desktop only, so phone layout is out of scope
 - [x] Deployed on Netlify, building from `main`
-- [ ] Custom domain pointed at it
+- [x] Custom domain pointed at it
 - [x] This README rewritten as the case study
 
 ## Case study
@@ -157,7 +159,7 @@ The fixtures are invented. They cover the right shapes, but a day that genuinely
 | Deliverables | Live app, public repo, 181 tests, screenshots of a completed day, a flagged day and the review list |
 | Skills | React, TypeScript, state design, testing, accessibility, offline web apps |
 | Resources | React, TypeScript, Vite, Tailwind, Vitest, Netlify |
-| Link | [clocked-madebysami.netlify.app](https://clocked-madebysami.netlify.app) |
+| Link | [clocked.madebysami.app](https://clocked.madebysami.app) |
 | Completion date | September 2026 |
 | Visual | The three screenshots above |
 
