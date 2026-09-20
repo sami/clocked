@@ -18,3 +18,6 @@ npm-debug.log*
 .vscode/*
 !.vscode/extensions.json
 *.swp
+
+# vite-plugin-pwa dev output
+dev-dist

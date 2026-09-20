@@ -5,14 +5,17 @@
 [build.environment]
   NODE_VERSION = "24"
 
-# Nothing is stored and nothing is sent, so the page can be locked down hard.
+# Nothing is sent, so the page stays locked down hard. connect-src is 'self'
+# rather than 'none' only so the service worker can cache the app's own files
+# for offline use. There is still nothing to talk to: no backend, no
+# analytics, no third party of any kind.
 [[headers]]
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
     Referrer-Policy = "no-referrer"
-    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'none'"
+    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'"
 
 [[headers]]
   for = "/assets/*"
