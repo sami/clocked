@@ -128,7 +128,7 @@ describe('the printed shape', () => {
   it('leads with the columns somebody reads', () => {
     const header = toCsv([sheet()]).split('\r\n')[0]
     expect(header).toBe(
-      'date,name,reason,expected,reviewed,actual,flag_code,flag_target,start,tbreak_out,tbreak_in,lunch_out,lunch_in,finish,sheet_id,extra_json,settings_json',
+      'date,name,needs_checking,expected,reviewed,actual,flag_code,flag_target,start,tbreak_out,tbreak_in,lunch_out,lunch_in,finish,sheet_id,extra_json,settings_json',
     )
   })
 

@@ -21,6 +21,8 @@ export interface ReviewItem {
   readonly target: string
   /** The plain English reason, straight from the rule that raised it. */
   readonly reason: string
+  /** The same thing in a few words, for the checklist and the printout. */
+  readonly short: string
   readonly expected: string
   readonly reviewed: boolean
   readonly actual: string
@@ -50,6 +52,7 @@ export function reviewItems(sheets: readonly SavedSheet[]): ReviewItem[] {
         code: flag.code,
         target: flag.target,
         reason: flag.reason,
+        short: flag.short,
         expected: note.expected,
         reviewed: note.reviewed,
         actual: note.actual,

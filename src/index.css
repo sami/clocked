@@ -55,9 +55,33 @@ body {
  * colours go back to ink on paper. The tick boxes stay, because half the
  * point is ticking them by hand.
  */
+/* Shown only on paper: the blanks that get filled in by hand. */
+.print-only {
+  display: none;
+}
+
 @media print {
   .no-print {
     display: none !important;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  /* A box to tick and a line to write the confirmed time on. Both need a
+     real border, because a printer will not draw a background colour. */
+  .tick-box {
+    width: 0.9rem;
+    height: 0.9rem;
+    border: 1px solid #000000;
+  }
+
+  .write-in {
+    display: block;
+    width: 5rem;
+    height: 1.1rem;
+    border-bottom: 1px solid #000000;
   }
 
   :root {

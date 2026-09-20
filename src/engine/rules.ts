@@ -49,6 +49,11 @@ export interface Flag {
   /** The input this is about, or the day as a whole. */
   readonly target: PunchId | 'day'
   readonly reason: string
+  /**
+   * The same thing in a few words, for a printed checklist where a
+   * paragraph per row is unreadable. Carries the time it is about.
+   */
+  readonly short: string
   /** Null when there is nothing safe to offer, which is most of the time. */
   readonly proposal: Proposal | null
 }
@@ -97,6 +102,7 @@ function missingShiftPunches(day: Day, settings: Settings): Flag[] {
       code: 'missing-finish',
       severity: 'needs-input',
       target: 'finish',
+      short: 'No finish clocked',
       reason: offerOr(
         settings.usualFinish,
         'There is a start but no finish, so the day has no total yet.',
@@ -111,6 +117,7 @@ function missingShiftPunches(day: Day, settings: Settings): Flag[] {
       code: 'missing-start',
       severity: 'needs-input',
       target: 'start',
+      short: 'No start clocked',
       reason: offerOr(
         settings.usualStart,
         'There is a finish but no start, so the day has no total yet.',
@@ -145,6 +152,9 @@ function brokenBreaks(rows: readonly BreakRow[]): Flag[] {
       code: missingIn ? 'unclosed-break' : 'orphan-break-end',
       severity: row.paid ? 'note' : 'needs-input',
       target: `${row.slot}.${missingIn ? 'in' : 'out'}`,
+      short: missingIn
+        ? `${sentenceCase(name)} started ${clocked}, not finished`
+        : `${sentenceCase(name)} ended ${clocked}, no start`,
       reason: row.paid
         ? `The ${name} at ${clocked} has only one punch. It is paid either way, so the total is unchanged.`
         : `The ${name} at ${clocked} has only one punch. No length is assumed, so nothing has been deducted.`,
@@ -164,6 +174,7 @@ function crossesMidnight(day: Day): Flag[] {
       code: 'crosses-midnight',
       severity: 'assumption',
       target: 'day',
+      short: `Crosses midnight, ${formatClock(day.start)} to ${formatClock(day.finish)}`,
       reason: `The finish of ${formatClock(day.finish)} is earlier than the start of ${formatClock(day.start)}, so the shift is treated as running into the next day.`,
       proposal: null,
     },
@@ -190,6 +201,7 @@ function overlappingBreaks(day: Day, settings: Settings): Flag[] {
       code: 'overlapping-breaks',
       severity: 'assumption',
       target: 'day',
+      short: 'Breaks overlap',
       reason:
         'Two breaks cover some of the same time. The overlap is counted once, and paid time wins where a paid break meets an unpaid one.',
       proposal: null,
@@ -213,6 +225,7 @@ function noLunchRecorded(totals: DayResult, settings: Settings): Flag[] {
       code: 'no-lunch-recorded',
       severity: 'note',
       target: 'day',
+      short: `No lunch recorded on ${formatDuration(totals.gross)}`,
       reason: `A shift of ${formatDuration(totals.gross)} with no unpaid break recorded. None has been added, because one may not have been taken.`,
       proposal: null,
     },
@@ -228,10 +241,16 @@ function implausibleLength(totals: DayResult, settings: Settings): Flag[] {
       code: 'implausible-length',
       severity: 'needs-input',
       target: 'day',
+      short: `${formatDuration(totals.gross)} shift, over the ${formatDuration(settings.maxShift)} limit`,
       reason: `A shift of ${formatDuration(totals.gross)} is longer than the ${formatDuration(settings.maxShift)} maximum. Nothing has been changed, so check the punches.`,
       proposal: null,
     },
   ]
+}
+
+/** 't-break' at the start of a short label reads better capitalised. */
+function sentenceCase(name: string): string {
+  return name.charAt(0).toUpperCase() + name.slice(1)
 }
 
 /** What to call a break row in a sentence. */

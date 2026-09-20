@@ -44,6 +44,54 @@ describe('evaluateDay', () => {
     expect(evaluateDay(EMPTY_DAY).flags).toEqual([])
   })
 
+  // The short label is what a printed checklist actually shows, so it is
+  // pinned here rather than left to drift.
+  describe('short labels', () => {
+    it.each([
+      [day({ ...CLEAN_DAY, finish: null }), 'missing-finish', 'No finish clocked'],
+      [day({ ...CLEAN_DAY, start: null }), 'missing-start', 'No start clocked'],
+      [
+        day({ ...CLEAN_DAY, lunch: { out: AT_1300, in: null } }),
+        'unclosed-break',
+        'Lunch started 13:00, not finished',
+      ],
+      [
+        day({ ...CLEAN_DAY, tBreak: { out: 630, in: null } }),
+        'unclosed-break',
+        'T-break started 10:30, not finished',
+      ],
+      [
+        day({ ...CLEAN_DAY, lunch: { out: null, in: AT_1330 } }),
+        'orphan-break-end',
+        'Lunch ended 13:30, no start',
+      ],
+      [
+        day({ start: 22 * 60, finish: 6 * 60 }),
+        'crosses-midnight',
+        'Crosses midnight, 22:00 to 06:00',
+      ],
+      [
+        day({ start: AT_0900, finish: AT_1730 }),
+        'no-lunch-recorded',
+        'No lunch recorded on 8h 30m',
+      ],
+      [
+        day({ start: 5 * 60, finish: 23 * 60 + 30 }),
+        'implausible-length',
+        '18h 30m shift, over the 16h limit',
+      ],
+    ] as const)('reads %#: %s', (given, code, expected) => {
+      expect(flag(evaluateDay(given), code).short).toBe(expected)
+    })
+
+    it('keeps the short label short', () => {
+      const messy = day({ start: 5 * 60, finish: 23 * 60 + 30 })
+      for (const raised of evaluateDay(messy).flags) {
+        expect(raised.short.length).toBeLessThanOrEqual(45)
+      }
+    })
+  })
+
   // One test per row of the gap handling table in the spec.
 
   describe('no shift end', () => {

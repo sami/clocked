@@ -23,7 +23,7 @@ import { reviewItems } from './items.ts'
 const COLUMNS = [
   'date',
   'name',
-  'reason',
+  'needs_checking',
   'expected',
   'reviewed',
   'actual',
@@ -119,7 +119,7 @@ function row(sheet: SavedSheet, item: ReturnType<typeof reviewItems>[number] | n
   return [
     sheet.date,
     sheet.name,
-    item?.reason ?? '',
+    item?.short ?? '',
     item?.expected ?? '',
     item ? (item.reviewed ? 'yes' : 'no') : '',
     item?.actual ?? '',
