@@ -61,6 +61,7 @@ src/
     rules.ts    The gap rules. One flag per row of the table above.
     summary.ts  The copied result, as a single line.
   day/input.ts  What the form holds, and how it becomes a day.
+  fixtures/     Ten awkward days the engine has to survive.
   components/   The six fields, the totals, the flags, the house rules.
   App.tsx       The single page.
   index.css     Tailwind and the design tokens.
@@ -74,7 +75,8 @@ The engine is a pure function with no React in it. Times are integer minutes sin
 - [x] Single page form with live totals and flags
 - [x] Extra break rows and the Clear control
 - [x] Copy result, example day, house rules
-- [ ] Ten real awkward days as fixtures, to test the engine against
+- [x] Ten fixture days, one per awkward shape, covering every gap rule
+- [ ] Replace those fixtures with real anonymised days from a sheet
 - [ ] Mobile and accessibility polish pass
 - [ ] Deployed, with this README rewritten as the case study
 
