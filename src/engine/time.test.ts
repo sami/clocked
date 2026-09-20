@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatClock, parseTime } from './time.ts'
+import { formatClock, formatDuration, parseTime } from './time.ts'
 
 describe('parseTime', () => {
   // Fixed by the spec: all three spellings of quarter past nine.
@@ -80,5 +80,18 @@ describe('formatClock', () => {
 
   it('wraps past midnight, for shifts that cross it', () => {
     expect(formatClock(1440 + 90)).toBe('01:30')
+  })
+})
+
+describe('formatDuration', () => {
+  it.each([
+    [0, '0m'],
+    [45, '45m'],
+    [60, '1h'],
+    [90, '1h 30m'],
+    [510, '8h 30m'],
+    [-30, '-30m'],
+  ])('formats %i as %s', (minutes, expected) => {
+    expect(formatDuration(minutes)).toBe(expected)
   })
 })

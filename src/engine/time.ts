@@ -68,3 +68,18 @@ export function formatClock(minutes: Minutes): string {
   const mm = String(wrapped % 60).padStart(2, '0')
   return `${hh}:${mm}`
 }
+
+/**
+ * Format a length of time for reading, e.g. 510 -> "8h 30m".
+ *
+ * Used in flag reasons and the copied result, so it stays short and plain.
+ * Negative lengths are shown as such rather than hidden, because a negative
+ * total means the punches disagree and the reader needs to see that.
+ */
+export function formatDuration(minutes: Minutes): string {
+  const abs = Math.abs(minutes)
+  const hours = Math.floor(abs / 60)
+  const rest = abs % 60
+  const text = hours === 0 ? `${rest}m` : rest === 0 ? `${hours}h` : `${hours}h ${rest}m`
+  return minutes < 0 ? `-${text}` : text
+}

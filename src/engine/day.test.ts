@@ -53,9 +53,30 @@ describe('calculateDay', () => {
 
   // The one rule the whole app is built around.
   it('never changes work time for a t-break, however long it ran', () => {
-    const marathon = day({ ...CLEAN_DAY, tBreak: { out: AT_1030, in: AT_1030 + 180 } })
+    // Runs right up to the lunch without touching it, so this measures the
+    // paid rule on its own rather than the overlap rule as well.
+    const marathon = day({ ...CLEAN_DAY, tBreak: { out: AT_1030, in: AT_1300 } })
     expect(calculateDay(marathon).workTime).toBe(calculateDay(CLEAN_DAY).workTime)
-    expect(calculateDay(marathon).paidBreaks).toBe(180)
+    expect(calculateDay(marathon).paidBreaks).toBe(150)
+  })
+
+  describe('overlapping breaks', () => {
+    it('counts two overlapping lunches once', () => {
+      const doubled = day({
+        ...CLEAN_DAY,
+        extra: [{ type: 'lunch', out: AT_1300 + 15, in: AT_1330 + 15 }],
+      })
+      expect(calculateDay(doubled)).toMatchObject({ unpaidBreaks: 45, workTime: 465 })
+    })
+
+    it('lets paid time win where a t-break overlaps a lunch', () => {
+      const overlapped = day({ ...CLEAN_DAY, tBreak: { out: AT_1300, in: AT_1300 + 10 } })
+      expect(calculateDay(overlapped)).toMatchObject({
+        paidBreaks: 10,
+        unpaidBreaks: 20,
+        workTime: 490,
+      })
+    })
   })
 
   it('deducts lunch at its actual length, not an expected one', () => {

@@ -12,6 +12,15 @@ import { MINUTES_PER_DAY, type Minutes } from './time.ts'
 /** The type of a break decides one thing only: paid or unpaid. */
 export type BreakType = 'tbreak' | 'lunch' | 'other'
 
+/** Which break row a punch belongs to. Extra rows are keyed by position. */
+export type BreakSlot = 'tBreak' | 'lunch' | `extra.${number}`
+
+/**
+ * A single input on the form. The UI keys its fields by the same string, so a
+ * flag can point straight at the box that needs attention.
+ */
+export type PunchId = 'start' | 'finish' | `${BreakSlot}.out` | `${BreakSlot}.in`
+
 export interface BreakPunches {
   readonly out: Minutes | null
   readonly in: Minutes | null
@@ -43,6 +52,11 @@ export interface Settings {
   readonly rounding: Rounding
   /** Over this, a shift is implausible. Flagged, never auto-fixed. */
   readonly maxShift: Minutes
+  /**
+   * Past this length, a shift with no unpaid break gets a note. It is only a
+   * trigger for the note. Clocked never expects a break of any length.
+   */
+  readonly longShiftAfter: Minutes
   /** Offered when a punch is missing. Never applied silently. */
   readonly usualStart: Minutes | null
   readonly usualFinish: Minutes | null
@@ -52,6 +66,7 @@ export const DEFAULT_SETTINGS: Settings = {
   paid: { tbreak: true, lunch: false, other: false },
   rounding: 'exact',
   maxShift: 16 * 60,
+  longShiftAfter: 6 * 60,
   usualStart: null,
   usualFinish: null,
 }
@@ -73,9 +88,20 @@ export interface DayResult {
   readonly workTime: Minutes | null
 }
 
-/** A break with both punches present, so its length is known rather than guessed. */
-interface ClosedBreak {
-  readonly length: Minutes
+/** One break row, flattened out of the six fixed fields and the extra rows. */
+export interface BreakRow {
+  readonly slot: BreakSlot
+  readonly type: BreakType
+  readonly out: Minutes | null
+  readonly in: Minutes | null
+  readonly paid: boolean
+}
+
+/** A closed break placed on a timeline running from the shift start. */
+export interface BreakInterval {
+  readonly slot: BreakSlot
+  readonly begin: Minutes
+  readonly end: Minutes
   readonly paid: boolean
 }
 
@@ -89,13 +115,12 @@ interface ClosedBreak {
  * @param settings which break types are paid, rounding, and the plausibility limit
  */
 export function calculateDay(day: Day, settings: Settings = DEFAULT_SETTINGS): DayResult {
-  let paidBreaks = 0
-  let unpaidBreaks = 0
-
-  for (const taken of closedBreaks(day, settings)) {
-    if (taken.paid) paidBreaks += taken.length
-    else unpaidBreaks += taken.length
-  }
+  // Measured as unions rather than sums, so overlapping breaks are counted
+  // once. Where a paid break overlaps an unpaid one the paid time wins, since
+  // the alternative is deducting time somebody actually worked.
+  const intervals = closedIntervals(day, settings)
+  const paidBreaks = measureUnion(intervals.filter((each) => each.paid))
+  const unpaidBreaks = measureUnion(intervals) - paidBreaks
 
   const gross =
     day.start !== null && day.finish !== null ? span(day.start, day.finish) : null
@@ -111,22 +136,75 @@ export function calculateDay(day: Day, settings: Settings = DEFAULT_SETTINGS): D
 }
 
 /** Flatten the six standard fields and the extra rows into one list of breaks. */
-function closedBreaks(day: Day, settings: Settings): ClosedBreak[] {
-  const all = [
-    { ...day.tBreak, type: 'tbreak' as const, paid: undefined },
-    { ...day.lunch, type: 'lunch' as const, paid: undefined },
-    ...day.extra,
+export function breakRows(day: Day, settings: Settings): BreakRow[] {
+  const rows: BreakRow[] = [
+    {
+      slot: 'tBreak',
+      type: 'tbreak',
+      out: day.tBreak.out,
+      in: day.tBreak.in,
+      paid: settings.paid.tbreak,
+    },
+    {
+      slot: 'lunch',
+      type: 'lunch',
+      out: day.lunch.out,
+      in: day.lunch.in,
+      paid: settings.paid.lunch,
+    },
   ]
 
-  const closed: ClosedBreak[] = []
-  for (const each of all) {
-    if (each.out === null || each.in === null) continue
-    closed.push({
-      length: span(each.out, each.in),
+  day.extra.forEach((each, index) => {
+    rows.push({
+      slot: `extra.${index}`,
+      type: each.type,
+      out: each.out,
+      in: each.in,
+      // A per-break override wins, then the house rule for that type.
       paid: each.paid ?? settings.paid[each.type],
     })
+  })
+
+  return rows
+}
+
+/**
+ * Breaks with both punches, placed on one timeline.
+ *
+ * Offsets run from the shift start, so a lunch from 23:45 to 00:15 on a night
+ * shift sits after a 22:00 start rather than before it. Without a start there
+ * is nothing to measure from, so raw clock times are used instead.
+ */
+export function closedIntervals(day: Day, settings: Settings): BreakInterval[] {
+  const origin = day.start ?? 0
+  const intervals: BreakInterval[] = []
+
+  for (const row of breakRows(day, settings)) {
+    if (row.out === null || row.in === null) continue
+    const begin = span(origin, row.out)
+    intervals.push({
+      slot: row.slot,
+      begin,
+      end: begin + span(row.out, row.in),
+      paid: row.paid,
+    })
   }
-  return closed
+
+  return intervals
+}
+
+/** Total minutes covered by the intervals, counting any overlap once. */
+function measureUnion(intervals: readonly BreakInterval[]): Minutes {
+  const sorted = [...intervals].sort((a, b) => a.begin - b.begin)
+
+  let total = 0
+  let covered = Number.NEGATIVE_INFINITY
+  for (const each of sorted) {
+    const begin = Math.max(each.begin, covered)
+    if (each.end > begin) total += each.end - begin
+    covered = Math.max(covered, each.end)
+  }
+  return total
 }
 
 /**
@@ -136,7 +214,7 @@ function closedBreaks(day: Day, settings: Settings): ClosedBreak[] {
  * ordinary for night work. Whether the result is plausible is a separate
  * question, answered by the maximum shift flag rather than here.
  */
-function span(from: Minutes, to: Minutes): Minutes {
+export function span(from: Minutes, to: Minutes): Minutes {
   const raw = to - from
   return raw >= 0 ? raw : raw + MINUTES_PER_DAY
 }

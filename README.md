@@ -2,7 +2,7 @@
 
 Clocked is a timesheet calculator. You type in a day's clockings and it tells you how long the person worked and how long their breaks ran, even when half the punches are missing.
 
-**Status:** early. The rules engine is being written first, so the page at [clocked.madebysami.app](https://clocked.madebysami.app) isn't live yet. Version 1 ships by 11 October 2026.
+**Status:** version 1 is built and runs locally. The engine and the single page are done, with 89 tests over the rules. Not deployed yet, so [clocked.madebysami.app](https://clocked.madebysami.app) isn't live. Version 1 ships by 11 October 2026.
 
 ## What problem does it solve?
 
@@ -55,19 +55,27 @@ npm run dev
 
 ```
 src/
-  engine/     Pure TypeScript. Punches and settings in, totals and flags out.
-  App.tsx     The single page.
-  index.css   Tailwind and the design tokens.
+  engine/       Pure TypeScript. Punches and settings in, totals and flags out.
+    time.ts     Parsing and formatting. Minutes since midnight, as integers.
+    day.ts      The day model and the four derived totals.
+    rules.ts    The gap rules. One flag per row of the table above.
+    summary.ts  The copied result, as a single line.
+  day/input.ts  What the form holds, and how it becomes a day.
+  components/   The six fields, the totals, the flags, the house rules.
+  App.tsx       The single page.
+  index.css     Tailwind and the design tokens.
 ```
 
 The engine is a pure function with no React in it. Times are integer minutes since midnight, so there's no date library and no floating point. It takes one day and returns one result, which means a week view later is a loop over it.
 
 ## What's left to build?
 
-- [ ] Rules engine, tested against ten real awkward days
-- [ ] Single page form with live totals and flags
-- [ ] Extra break rows and the Clear control
-- [ ] Copy result, example day, polish pass
+- [x] Rules engine, one test per row of the gap table
+- [x] Single page form with live totals and flags
+- [x] Extra break rows and the Clear control
+- [x] Copy result, example day, house rules
+- [ ] Ten real awkward days as fixtures, to test the engine against
+- [ ] Mobile and accessibility polish pass
 - [ ] Deployed, with this README rewritten as the case study
 
 ## Case study
