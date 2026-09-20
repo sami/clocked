@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, type ReactNode } from 'react'
 import type { PunchId } from '../engine/day.ts'
 
 interface TimeFieldProps {
@@ -9,6 +9,8 @@ interface TimeFieldProps {
   /** Ids of the flags about this field, so a screen reader reads them with it. */
   readonly describedBy?: string
   readonly flagged?: boolean
+  /** Rendered under the input, for the expected time when this one is flagged. */
+  readonly children?: ReactNode
 }
 
 /**
@@ -19,7 +21,7 @@ interface TimeFieldProps {
  * speed target depends on.
  */
 export const TimeField = forwardRef<HTMLInputElement, TimeFieldProps>(function TimeField(
-  { punch, label, value, onChange, describedBy, flagged },
+  { punch, label, value, onChange, describedBy, flagged, children },
   ref,
 ) {
   return (
@@ -43,6 +45,7 @@ export const TimeField = forwardRef<HTMLInputElement, TimeFieldProps>(function T
           flagged ? 'border-flag' : 'border-line'
         }`}
       />
+      {children}
     </div>
   )
 })

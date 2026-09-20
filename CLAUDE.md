@@ -17,8 +17,9 @@ The full spec and task tracking live in Notion: "Project: Clocked (timesheet cal
 - Never invent an unpaid break. A missing lunch gets a flag, not a deduction.
 - Never guess silently. Every assumption produces a flag with a proposal and a plain English reason, and shows up in the totals and the copied result.
 - No policing. If a feature answers "did they take too long?" it's out of scope, permanently.
-- Nothing stored, nothing sent. No analytics, no web fonts, no network calls. `netlify.toml` sets `connect-src 'none'`.
-- No real names in fixtures, tests, demo data or screenshots. Initials or IDs only, and demo data is fictional.
+- Nothing sent. No analytics, no web fonts, no backend, no network calls once loaded.
+- Saved sheets live in this browser's localStorage and never leave the machine. A CSV export is the only way data moves, and the person moves it by hand. The machine this runs on clears site data at logout, so the CSV is the real persistence and localStorage is the within-session convenience.
+- No real names in fixtures, tests, demo data or screenshots. Initials or IDs only, and demo data is fictional. What somebody types into the name field at runtime is their own business and stays on their machine.
 
 ## Architecture
 

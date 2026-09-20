@@ -46,3 +46,42 @@ body {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
+
+/*
+ * Printing.
+ *
+ * The review list is meant to come off the printer as a checklist you carry
+ * about, so everything that is only useful on screen is dropped and the
+ * colours go back to ink on paper. The tick boxes stay, because half the
+ * point is ticking them by hand.
+ */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  :root {
+    --color-surface: #ffffff;
+    --color-surface-raised: #ffffff;
+    --color-ink: #000000;
+    --color-ink-muted: #333333;
+    --color-line: #999999;
+  }
+
+  body {
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  table {
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+}

@@ -30,9 +30,28 @@ One case gets special care: Clocked will never invent an unpaid break. A missing
 
 ## Is any data stored?
 
-No. There's no account and no backend. The day lives in memory and the Clear button wipes it. The site's headers block outgoing requests, so the browser holds it to that.
+Only on your own machine, and only because losing a morning's work is worse.
 
-Use initials or IDs if you need to label anything. Real names stay out.
+There's no account and no backend. Nothing is ever sent anywhere. Saved sheets live in this browser's localStorage, and the CSV export is the only way data moves, moved by you.
+
+That storage is not a safe place to leave anything. Logging out of a work machine usually clears site data, which takes the saved sheets with it. So the CSV is the real backup and localStorage is the convenience in between. Export before you finish, load it back the next morning, and carry on.
+
+Use initials or IDs if you can. Real names stay out of the repo, the fixtures and the screenshots.
+
+## What's the workflow?
+
+The sheets you're reading from show raw clocked times and nothing else. No indication of which punch is an in or an out, and no indication of which are breaks. You supply that, Clocked does the arithmetic.
+
+When somebody's forgotten to clock, you can't settle it at your desk. So you note what the time should have been and move on.
+
+1. Type the name, the date and the punches
+2. Anything missing is flagged, and a box appears to record the time you'd expect
+3. **New** saves the sheet and clears the form for the next person
+4. When you're through the stack, the **review list** has everything flagged, oldest shift first
+5. Tick each one off as you chase it and record the time confirmed
+6. Print it as a checklist, or export the CSV to carry on tomorrow
+
+**Clear everything** deletes the lot, saved sheets and review list included. It asks first.
 
 ## How do I run it?
 
@@ -61,6 +80,8 @@ src/
     rules.ts    The gap rules. One flag per row of the table above.
     summary.ts  The copied result, as a single line.
   day/input.ts  What the form holds, and how it becomes a day.
+  storage/      Saved sheets, kept in this browser only.
+  review/       The review list, the CSV round trip, saving a file.
   fixtures/     Ten awkward days the engine has to survive.
   components/   The six fields, the totals, the flags, the house rules.
   App.tsx       The single page.
@@ -77,6 +98,8 @@ The engine is a pure function with no React in it. Times are integer minutes sin
 - [x] Copy result, example day, house rules
 - [x] Ten fixture days, one per awkward shape, covering every gap rule
 - [ ] Replace those fixtures with real anonymised days from a sheet
+- [x] Save sheets, flag what needs chasing, review list, CSV round trip
+- [ ] Works offline without a connection
 - [ ] Mobile and accessibility polish pass
 - [ ] Deployed, with this README rewritten as the case study
 
