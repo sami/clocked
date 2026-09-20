@@ -2,7 +2,7 @@
 
 Clocked is a timesheet calculator. You type in a day's clockings and it tells you how long the person worked and how long their breaks ran, even when half the punches are missing.
 
-**Status:** version 1 is built and runs locally. The engine and the single page are done, with 89 tests over the rules. Not deployed yet, so [clocked.madebysami.app](https://clocked.madebysami.app) isn't live. Version 1 ships by 11 October 2026.
+**Status:** live at [clocked-madebysami.netlify.app](https://clocked-madebysami.netlify.app), rebuilt from `main` on every push. 180 tests over the rules. The custom domain at clocked.madebysami.app isn't pointed at it yet. Version 1 ships by 11 October 2026.
 
 ## What problem does it solve?
 
@@ -99,9 +99,11 @@ The engine is a pure function with no React in it. Times are integer minutes sin
 - [x] Ten fixture days, one per awkward shape, covering every gap rule
 - [ ] Replace those fixtures with real anonymised days from a sheet
 - [x] Save sheets, flag what needs chasing, review list, CSV round trip
-- [ ] Works offline without a connection
-- [ ] Mobile and accessibility polish pass
-- [ ] Deployed, with this README rewritten as the case study
+- [x] Works offline without a connection
+- [ ] Accessibility pass. Desktop only, so phone layout is out of scope
+- [x] Deployed on Netlify, building from `main`
+- [ ] Custom domain pointed at it
+- [ ] This README rewritten as the case study
 
 ## Case study
 
