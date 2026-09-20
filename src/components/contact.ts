@@ -8,7 +8,7 @@
  */
 
 const LOCAL = 'olleh'
-const HOST = 'oi.imas'
+const HOST = 'sedoc.imas'
 
 function reverse(text: string): string {
   return [...text].reverse().join('')

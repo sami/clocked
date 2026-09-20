@@ -3,7 +3,7 @@ import { contactAddress } from './contact.ts'
 
 describe('contactAddress', () => {
   it('assembles the right address', () => {
-    expect(contactAddress()).toBe('hello@sami.io')
+    expect(contactAddress()).toBe('hello@sami.codes')
   })
 
   // The whole point of assembling it. If the literal creeps back in it
@@ -12,6 +12,6 @@ describe('contactAddress', () => {
     const source = (await import('./contact.ts?raw')).default as string
 
     expect(source).not.toContain(contactAddress())
-    expect(source).not.toContain('sami.io')
+    expect(source).not.toContain('sami.codes')
   })
 })
